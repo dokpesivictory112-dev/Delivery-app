@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fers Innova — Delivery Confirmation</title>
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-deep:#071527;
+    --gold:#C6952F;
+    --gold-light:#E8C877;
+    --cream:#FAF7F0;
+    --ink:#1A2332;
+    --muted:#6B7688;
+    --line:#E4E0D6;
+    --ok:#3A7D5C;
+    --wa:#25D366;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--navy-deep);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .phone{
+    width:100%;
+    max-width:420px;
+    background:var(--cream);
+    min-height:100vh;
+  }
+  header{
+    background:var(--navy);
+    padding:28px 20px 22px;
+    text-align:center;
+    border-bottom:3px solid var(--gold);
+  }
+  header .word{
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--gold-light);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  header h1{
+    color:#fff;
+    font-size:20px;
+    margin:0;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  header p{
+    color:rgba(255,255,255,0.6);
+    font-size:12.5px;
+    margin:6px 0 0;
+  }
+  .step{
+    padding:22px 20px 40px;
+  }
+  .label{
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  input{
+    width:100%;
+    padding:14px 16px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-size:16px;
+    background:#fff;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  input:focus{outline:none;border-color:var(--gold);}
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:20px;
+  }
+  button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:var(--gold);
+    color:var(--navy-deep);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    cursor:pointer;
+  }
+  button.secondary{
+    background:transparent;
+    border:1.5px solid var(--navy);
+    color:var(--navy);
+    margin-top:10px;
+  }
+  button.whatsapp{
+    background:var(--wa);
+    color:#fff;
+  }
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .order-card{
+    background:#fff;
+    border-radius:12px;
+    border:1px solid var(--line);
+    overflow:hidden;
+    margin-bottom:18px;
+  }
+  .order-card .head{
+    background:var(--navy);
+    color:#fff;
+    padding:14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .order-card .head .inv{
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--gold-light);
+    font-weight:700;
+  }
+  .order-card .head .name{
+    font-size:14px;
+    font-weight:600;
+  }
+  .item-row{
+    display:flex;
+    justify-content:space-between;
+    padding:11px 16px;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .item-row:last-child{border-bottom:none;}
+  .item-row .qty{
+    color:var(--muted);
+    font-size:12.5px;
+  }
+  .item-row .amt{
+    color:var(--muted);
+    white-space:nowrap;
+    margin-left:12px;
+  }
+  .total-row{
+    display:flex;
+    justify-content:space-between;
+    padding:13px 16px;
+    background:#F5F1E6;
+    font-weight:700;
+    font-size:14px;
+  }
+
+  .confirm-box{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:#F5F1E6;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:20px;
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .confirm-box input[type=checkbox]{
+    width:auto;
+    margin:2px 0 0;
+    flex-shrink:0;
+  }
+
+  .toggle-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .toggle-btn{
+    flex:1;
+    min-width:104px;
+    padding:12px 6px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    text-align:center;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .toggle-btn.active{
+    border-color:var(--navy);
+    background:var(--navy);
+    color:#fff;
+  }
+
+  .pair-toggle{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:4px 0 16px;
+    font-size:13.5px;
+  }
+  .pair-toggle input{width:auto;margin:0;}
+  .pair-block{
+    display:none;
+    background:#F5F1E6;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:18px;
+  }
+  .pair-status{
+    font-size:12.5px;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:6px;
+  }
+  .pair-status.ok{background:#DCEEE3;color:var(--ok);}
+  .pair-status.bad{background:#F5DADA;color:#A33;}
+
+  .success{
+    text-align:center;
+    padding:20px 10px 10px;
+  }
+  .success .check{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--ok);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;
+    margin:0 auto 16px;
+  }
+  .success h2{
+    font-size:18px;margin:0 0 8px;
+  }
+  .success p{
+    font-size:13.5px;color:var(--muted);line-height:1.5;margin:0 0 24px;
+  }
+  .footnote{
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    padding:16px 20px;
+  }
+  .flag-link{
+    display:block;
+    text-align:center;
+    font-size:12.5px;
+    color:var(--navy);
+    text-decoration:underline;
+    margin-top:14px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    width:100%;
+  }
+
+  /* Waybill preview */
+  .waybill-preview{
+    background:#fff;
+    border:2px dashed var(--line);
+    border-radius:12px;
+    padding:20px;
+    margin-top:20px;
+    position:relative;
+  }
+  .waybill-preview .wb-label{
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .wb-field{margin-bottom:14px;}
+  .wb-field .wb-k{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+    margin-bottom:2px;
+  }
+  .wb-field .wb-v{
+    font-size:18px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .wb-inv{
+    position:absolute;
+    top:14px;
+    right:16px;
+    font-size:10px;
+    color:var(--muted);
+    letter-spacing:0.5px;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <header>
+    <div class="word">Fers Innova</div>
+    <h1>Delivery Confirmation</h1>
+    <p>Enter your details to continue</p>
+  </header>
+
+  <!-- STEP 1: Lookup -->
+  <div class="step" id="step1">
+    <div class="label">Invoice Number</div>
+    <input type="text" id="invInput" placeholder="Enter your invoice number" autocomplete="off" inputmode="numeric">
+    <div class="hint" style="margin-bottom:16px;">Type it with or without "INV" — both work.</div>
+
+    <div class="label">Phone Number Used to Order</div>
+    <input type="text" id="phoneInput" placeholder="Enter the phone number used to order" autocomplete="off">
+    <div class="hint">We match both together, so only you can see your order.</div>
+
+    <button onclick="lookup()">Find My Order</button>
+  </div>
+
+  <!-- STEP 2: Confirm order -->
+  <div class="step" id="step2" style="display:none;">
+    <div class="order-card" id="orderCard"></div>
+    <button class="secondary" style="margin-bottom:18px;" onclick="editLookup()">Edit Invoice / Phone Number</button>
+
+    <div class="confirm-box">
+      <input type="checkbox" id="confirmCheck" onchange="toggleContinue()">
+      <label for="confirmCheck">This matches what I ordered.</label>
+    </div>
+
+    <button id="continueBtn" disabled onclick="showStep3()">Continue to Delivery Details</button>
+    <button class="flag-link" onclick="flagIssue()">Something's wrong with my order →</button>
+  </div>
+
+  <!-- STEP 3: Delivery details -->
+  <div class="step" id="step3" style="display:none;">
+
+    <div class="label">How will this order reach you?</div>
+    <div class="toggle-row">
+      <div class="toggle-btn active" id="btnBenin" onclick="setLocation('benin')">Within Benin City</div>
+      <div class="toggle-btn" id="btnOutside" onclick="setLocation('outside')">Outside Benin City</div>
+      <div class="toggle-btn" id="btnPickup" onclick="setLocation('pickup')">I'll Pick Up Myself</div>
+    </div>
+
+    <!-- Benin City fields -->
+    <div id="beninFields">
+      <div class="label">Recipient's Full Name</div>
+      <input type="text" id="beninName" placeholder="Who should we deliver to?">
+      <div class="label">Recipient's Phone Number</div>
+      <input type="text" id="beninPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">Area / Town</div>
+      <input type="text" id="beninArea" placeholder="e.g. Ugbowo, GRA, Sapele Road">
+      <div class="label">Landmark / Description</div>
+      <input type="text" id="beninLandmark" placeholder="e.g. Close to First Bank, opposite NNPC filling station">
+      <div class="hint" style="margin-top:-4px;">Helpful since not all streets are well known — a nearby landmark makes it easier to find you.</div>
+      <div class="label">Street Address</div>
+      <input type="text" id="beninStreet" placeholder="House number, street name (if known)">
+    </div>
+
+    <!-- Outside city / park fields -->
+    <div id="outsideFields" style="display:none;">
+      <div class="hint" style="margin-top:-6px;">Delivered via park — we'll generate a waybill from these details.</div>
+      <div class="label">Recipient's Full Name</div>
+      <input type="text" id="outName" placeholder="Who is picking this up?">
+      <div class="label">Recipient's Phone Number</div>
+      <input type="text" id="outPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">State</div>
+      <input type="text" id="outState" placeholder="e.g. Lagos">
+      <div class="label">Area</div>
+      <input type="text" id="outArea" placeholder="e.g. Ojota Park">
+    </div>
+
+    <!-- Pickup fields -->
+    <div id="pickupFields" style="display:none;">
+      <div class="hint" style="margin-top:-6px;">Tell us who's collecting and which day works — you can change this anytime until your order is packed and ready.</div>
+      <div class="label">Who will be picking this up?</div>
+      <input type="text" id="pickName" placeholder="e.g. Victory (can be you or someone you authorize)">
+      <div class="label">Their Phone Number</div>
+      <input type="text" id="pickPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">Which day are you coming?</div>
+      <input type="date" id="pickDate" min="2026-09-04">
+      <div class="hint" style="margin-top:-4px;">Earliest available pickup day is shown — your order isn't ready before then.</div>
+    </div>
+
+    <!-- Paired delivery -->
+    <div class="pair-toggle">
+      <input type="checkbox" id="pairCheck" onchange="togglePair()">
+      <label for="pairCheck">Delivering together with someone else (e.g. a sibling)?</label>
+    </div>
+    <div class="pair-block" id="pairBlock">
+      <div class="label">Their Invoice Number</div>
+      <input type="text" id="pairInv" placeholder="e.g. 2017">
+      <div class="label">Their Phone Number</div>
+      <input type="text" id="pairPhone" placeholder="e.g. 0901 255 1760">
+      <button class="secondary" style="margin-top:4px;" onclick="verifyPair()">Verify & Link</button>
+      <div id="pairStatus"></div>
+    </div>
+
+    <button onclick="showSuccess()">Confirm Delivery Details</button>
+  </div>
+
+  <!-- STEP 4: Success + waybill preview if outside -->
+  <div class="step" id="step4" style="display:none;">
+    <div class="success">
+      <div class="check">✓</div>
+      <h2>Delivery details saved</h2>
+      <p id="successText">Your order and delivery info are confirmed. You'll be notified on WhatsApp when your batch is ready for dispatch.</p>
+    </div>
+
+    <div class="waybill-preview" id="waybillPreview" style="display:none;">
+      <div class="wb-inv" id="wbInv"></div>
+      <div class="wb-label">Waybill — Park Delivery (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Name</div><div class="wb-v" id="wbName"></div></div>
+      <div class="wb-field"><div class="wb-k">Number</div><div class="wb-v" id="wbNumber"></div></div>
+      <div class="wb-field"><div class="wb-k">State</div><div class="wb-v" id="wbState"></div></div>
+      <div class="wb-field"><div class="wb-k">Area</div><div class="wb-v" id="wbArea"></div></div>
+    </div>
+
+    <div class="waybill-preview" id="dispatchPreview" style="display:none;">
+      <div class="wb-inv" id="dpInv"></div>
+      <div class="wb-label">Dispatch Card — Benin City (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Name</div><div class="wb-v" id="dpName"></div></div>
+      <div class="wb-field"><div class="wb-k">Number</div><div class="wb-v" id="dpNumber"></div></div>
+      <div class="wb-field"><div class="wb-k">Area / Town</div><div class="wb-v" id="dpArea"></div></div>
+      <div class="wb-field"><div class="wb-k">Landmark</div><div class="wb-v" id="dpLandmark"></div></div>
+      <div class="wb-field"><div class="wb-k">Street Address</div><div class="wb-v" id="dpStreet"></div></div>
+    </div>
+
+    <div class="waybill-preview" id="pickupPreview" style="display:none;">
+      <div class="wb-inv" id="pkInv"></div>
+      <div class="wb-label">Pickup Slip (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Authorized Person</div><div class="wb-v" id="pkName"></div></div>
+      <div class="wb-field"><div class="wb-k">Their Number</div><div class="wb-v" id="pkPhone"></div></div>
+      <div class="wb-field"><div class="wb-k">Pickup Day</div><div class="wb-v" id="pkDate"></div></div>
+    </div>
+
+    <button class="secondary" onclick="editDelivery()">Edit Delivery Details</button>
+    <button class="secondary" onclick="reset()">Done</button>
+  </div>
+</div>
+
+<script>
+const ORDERS = {
+  "1003": {
+    client: "Obehi", phone: "+234 811 595 5847",
+    items: [
+      {name:"Atomizer", qty:2, amt:1000},
+      {name:"Bag (Black)", qty:1, amt:3600},
+      {name:"Bag (Black)", qty:1, amt:3700},
+      {name:"Bag (Black)", qty:1, amt:5375},
+      {name:"Bag (2 Black, 1 Pink)", qty:3, amt:9810},
+      {name:"Bag (Black)", qty:1, amt:4300},
+    ], total: 27785
+  },
+  "2017": {
+    client: "Alison", phone: "+234 901 255 1760",
+    items: [
+      {name:"Facial Steamer", qty:1, amt:6500},
+      {name:"Lash Kit", qty:1, amt:1800},
+      {name:"Wig Cap (Black)", qty:2, amt:1000},
+      {name:"Body Oil", qty:1, amt:2200},
+      {name:"Shipping Fee", qty:1, amt:1500},
+    ], total: 13000
+  },
+  "3050": {
+    client: "Kesiena", phone: "+234 812 000 1111",
+    items: [
+      {name:"Perfume Oil Set", qty:1, amt:5200},
+      {name:"Jewelry Box", qty:1, amt:3400},
+    ], total: 8600,
+    demoPacked: true
+  }
+};
+
+let currentInv = null;
+let currentOrder = null;
+let pairedInv = null;
+
+function normalizePhone(p){
+  let digits = p.replace(/[^0-9]/g,'');
+  if(digits.startsWith('234')) digits = digits.slice(3);
+  if(digits.startsWith('0')) digits = digits.slice(1);
+  return digits;
+}
+
+// Same verification function reused for both the main lookup and the
+// paired-delivery lookup — one rule, applied everywhere.
+function verifyInvoicePhone(invRaw, phoneRaw){
+  const inv = invRaw.trim().replace(/^INV/i,'');
+  const order = ORDERS[inv];
+  if(!order) return {ok:false, reason:"no_invoice"};
+  if(normalizePhone(phoneRaw) !== normalizePhone(order.phone)) return {ok:false, reason:"phone_mismatch"};
+  return {ok:true, inv, order};
+}
+
+function lookup(){
+  const result = verifyInvoicePhone(
+    document.getElementById('invInput').value,
+    document.getElementById('phoneInput').value
+  );
+  if(!result.ok){
+    alert(result.reason === "no_invoice"
+      ? "No order found for that invoice number. Try 1003 or 2017 in this demo."
+      : "That phone number doesn't match our records for this invoice. Please double check, or contact us on WhatsApp for help.");
+    return;
+  }
+  currentInv = result.inv;
+  currentOrder = result.order;
+
+  const card = document.getElementById('orderCard');
+  let rows = result.order.items.map(it => `
+    <div class="item-row">
+      <div>${it.name}<div class="qty">Qty: ${it.qty}</div></div>
+      <div class="amt">₦${it.amt.toLocaleString()}</div>
+    </div>`).join('');
+  card.innerHTML = `
+    <div class="head">
+      <div class="inv">Invoice ${result.inv}</div>
+      <div class="name">${result.order.client}</div>
+    </div>
+    ${rows}
+    <div class="total-row"><span>Total</span><span>₦${result.order.total.toLocaleString()}</span></div>
+  `;
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='block';
+}
+
+function editLookup(){
+  // Return to step 1 with the current values still filled in,
+  // so the customer only has to fix what was wrong, not retype everything.
+  document.getElementById('invInput').value = currentInv;
+  document.getElementById('phoneInput').value = currentOrder.phone;
+  document.getElementById('confirmCheck').checked = false;
+  document.getElementById('continueBtn').disabled = true;
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step1').style.display='block';
+}
+
+function toggleContinue(){
+  document.getElementById('continueBtn').disabled = !document.getElementById('confirmCheck').checked;
+}
+
+function showStep3(){
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='block';
+}
+
+function flagIssue(){
+  const msg = encodeURIComponent(`Hi, I have an issue with my order — Invoice ${currentInv}, ${currentOrder.client}.`);
+  alert("This opens WhatsApp with a pre-filled message:\n\n\"Hi, I have an issue with my order — Invoice " + currentInv + ", " + currentOrder.client + ".\"\n\n(In the live version: wa.me/234XXXXXXXXXX?text=" + msg + ")");
+}
+
+function setLocation(loc){
+  document.getElementById('btnBenin').classList.toggle('active', loc==='benin');
+  document.getElementById('btnOutside').classList.toggle('active', loc==='outside');
+  document.getElementById('btnPickup').classList.toggle('active', loc==='pickup');
+  document.getElementById('beninFields').style.display = loc==='benin' ? 'block':'none';
+  document.getElementById('outsideFields').style.display = loc==='outside' ? 'block':'none';
+  document.getElementById('pickupFields').style.display = loc==='pickup' ? 'block':'none';
+  window.currentLocation = loc;
+}
+setLocation('benin');
+
+function togglePair(){
+  document.getElementById('pairBlock').style.display = document.getElementById('pairCheck').checked ? 'block':'none';
+}
+
+function verifyPair(){
+  const result = verifyInvoicePhone(
+    document.getElementById('pairInv').value,
+    document.getElementById('pairPhone').value
+  );
+  const statusEl = document.getElementById('pairStatus');
+  if(!result.ok){
+    statusEl.className = 'pair-status bad';
+    statusEl.textContent = "Couldn't verify — check invoice number and phone number match.";
+    pairedInv = null;
+  } else {
+    statusEl.className = 'pair-status ok';
+    statusEl.textContent = `Linked to Invoice ${result.inv} (${result.order.client}) — both will be delivered together.`;
+    pairedInv = result.inv;
+  }
+}
+
+function showSuccess(){
+  let missing = [];
+  if(window.currentLocation === 'benin'){
+    if(!document.getElementById('beninName').value.trim()) missing.push('Name');
+    if(!document.getElementById('beninPhone').value.trim()) missing.push('Phone');
+    if(!document.getElementById('beninArea').value.trim()) missing.push('Area/Town');
+    if(!document.getElementById('beninLandmark').value.trim()) missing.push('Landmark/Description');
+  } else if(window.currentLocation === 'outside'){
+    if(!document.getElementById('outName').value.trim()) missing.push('Name');
+    if(!document.getElementById('outPhone').value.trim()) missing.push('Phone');
+    if(!document.getElementById('outState').value.trim()) missing.push('State');
+    if(!document.getElementById('outArea').value.trim()) missing.push('Area');
+  } else {
+    if(!document.getElementById('pickName').value.trim()) missing.push('Pickup Person Name');
+    if(!document.getElementById('pickPhone').value.trim()) missing.push('Their Phone Number');
+    if(!document.getElementById('pickDate').value.trim()) missing.push('Pickup Day');
+  }
+  if(missing.length){
+    alert("Please fill in: " + missing.join(', '));
+    return;
+  }
+
+  document.getElementById('step3').style.display='none';
+  document.getElementById('step4').style.display='block';
+
+  if(window.currentLocation === 'outside'){
+    document.getElementById('successText').textContent = "Your delivery will go through park. A waybill has been generated for our team below.";
+    document.getElementById('waybillPreview').style.display='block';
+    document.getElementById('wbName').textContent = document.getElementById('outName').value;
+    document.getElementById('wbNumber').textContent = document.getElementById('outPhone').value;
+    document.getElementById('wbState').textContent = document.getElementById('outState').value;
+    document.getElementById('wbArea').textContent = document.getElementById('outArea').value;
+    document.getElementById('wbInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  } else if(window.currentLocation === 'pickup'){
+    document.getElementById('successText').textContent = "Pickup details saved. Bring ID matching the authorized name below when you come.";
+    document.getElementById('pickupPreview').style.display='block';
+    document.getElementById('pkName').textContent = document.getElementById('pickName').value;
+    document.getElementById('pkPhone').textContent = document.getElementById('pickPhone').value;
+    document.getElementById('pkDate').textContent = document.getElementById('pickDate').value;
+    document.getElementById('pkInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  } else {
+    document.getElementById('successText').textContent = "Your delivery will be handled by our Benin City dispatch team. A dispatch card has been generated below.";
+    document.getElementById('dispatchPreview').style.display='block';
+    document.getElementById('dpName').textContent = document.getElementById('beninName').value;
+    document.getElementById('dpNumber').textContent = document.getElementById('beninPhone').value;
+    document.getElementById('dpArea').textContent = document.getElementById('beninArea').value;
+    document.getElementById('dpLandmark').textContent = document.getElementById('beninLandmark').value;
+    document.getElementById('dpStreet').textContent = document.getElementById('beninStreet').value.trim() || '—';
+    document.getElementById('dpInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  }
+}
+
+function editDelivery(){
+  // Locked demo: invoice 3050 (Kesiena) simulates an order already
+  // marked Packed by staff — the authorized pickup person can no
+  // longer be changed by the customer past this point.
+  if(window.currentLocation === 'pickup' && currentOrder && currentOrder.demoPacked){
+    alert("This order has already been packed and is ready for pickup, so the authorized person can no longer be changed here. Please contact us directly on WhatsApp if you need to update who's collecting it.");
+    return;
+  }
+  // Fields are untouched since we never cleared them — customer
+  // just sees their own step 3 again, exactly as they left it.
+  document.getElementById('waybillPreview').style.display='none';
+  document.getElementById('dispatchPreview').style.display='none';
+  document.getElementById('pickupPreview').style.display='none';
+  document.getElementById('step4').style.display='none';
+  document.getElementById('step3').style.display='block';
+}
+
+function reset(){
+  location.reload();
+}
+</script>
+</body>
+</html>
