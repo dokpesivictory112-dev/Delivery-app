@@ -182,7 +182,7 @@ function publicOrder(inv, o, portal){
     pickupPersonPhone: o.pickupPersonPhone || '',
     pickupDate: o.pickupDate || '',
     pairedInvoice: o.pairedInvoice || '',
-    minPickup: laterDate(o.earliestPickupDate, portal && portal.pickupStartDate)
+    minPickup: ((portal && portal.pickupStartDate) || "")
   };
 }
 
@@ -287,7 +287,7 @@ exports.submitDelivery = onCall(OPTS, async request => {
     if((o.status || 'pending') !== 'pending') throw new HttpsError('failed-precondition', 'LOCKED');
     if(Number(o.balance) > 0) throw new HttpsError('failed-precondition', 'BALANCE_OWING');
 
-    const minPickup = laterDate(o.earliestPickupDate, portal.pickupStartDate);
+    const minPickup = (portal.pickupStartDate || "");
     const details = cleanDetails(d.details, minPickup);
     if(pairedInvoice) details.pairedInvoice = pairedInvoice;
 
@@ -312,4 +312,4 @@ exports.submitDelivery = onCall(OPTS, async request => {
 // so Firebase doesn't mistake it for a function.
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
   exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, describeChanges, cleanDetails, publicOrder};
-    }
+}
