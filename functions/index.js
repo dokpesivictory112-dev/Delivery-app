@@ -82,6 +82,15 @@ function isoDate(v){
   return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
 }
 
+// Earliest day a customer may choose: the later of the admin start date and
+// tomorrow (Nigeria time, UTC+1), so nobody can book the same day they ask.
+function earliestDay(portal, now){
+  const lagos = new Date((now || new Date()).getTime() + 60 * 60 * 1000);
+  lagos.setUTCDate(lagos.getUTCDate() + 1);
+  const tomorrow = lagos.toISOString().slice(0, 10);
+  return laterDate(portal && portal.pickupStartDate, tomorrow);
+}
+
 function laterDate(a, b){
   a = a || ''; b = b || '';
   return a > b ? a : b; // YYYY-MM-DD strings compare correctly as text
@@ -182,7 +191,7 @@ function publicOrder(inv, o, portal){
     pickupPersonPhone: o.pickupPersonPhone || '',
     pickupDate: o.pickupDate || '',
     pairedInvoice: o.pairedInvoice || '',
-    minPickup: ((portal && portal.pickupStartDate) || "")
+    minPickup: earliestDay(portal)
   };
 }
 
@@ -218,7 +227,7 @@ const LABELS = {
   locationType: 'Delivery type', recipientName: 'Name', recipientPhone: 'Phone',
   area: 'Area', landmark: 'Landmark', street: 'Street', state: 'State',
   pickupPersonName: 'Pickup person', pickupPersonPhone: 'Pickup phone',
-  pickupDate: 'Pickup day', pairedInvoice: 'Paired invoice'
+  pickupDate: 'Day', pairedInvoice: 'Paired invoice'
 };
 const LOC_NAMES = {benin: 'Benin City', outside: 'Park delivery', pickup: 'Pickup'};
 
@@ -234,6 +243,15 @@ function describeChanges(before, after){
   return out.join('; ').slice(0, 400);
 }
 
+function chooseDay(value, minDay){
+  const day = isoDate(value);
+  if(!day) throw new HttpsError('invalid-argument', 'BAD_INPUT:Please choose the day.');
+  if(minDay && day < minDay){
+    throw new HttpsError('invalid-argument', 'BAD_INPUT:That day is not available. Please choose ' + minDay + ' or a later day.');
+  }
+  return day;
+}
+
 function cleanDetails(input, minPickup){
   const t = input && input.locationType;
   if(!['benin', 'outside', 'pickup'].includes(t)) throw new HttpsError('invalid-argument', 'BAD_INPUT:Choose how the order will reach you.');
@@ -246,20 +264,17 @@ function cleanDetails(input, minPickup){
     p.area = need(str(input.area, 120), 'the area or town');
     p.landmark = need(str(input.landmark, 200), 'a landmark or description');
     p.street = str(input.street, 200) || '-';
+    p.pickupDate = chooseDay(input.pickupDate, minPickup);
   } else if(t === 'outside'){
     p.recipientName = need(str(input.recipientName, 120), 'the recipient name');
     p.recipientPhone = need(str(input.recipientPhone, 30), 'the recipient phone number');
     p.state = need(str(input.state, 80), 'the state');
     p.area = need(str(input.area, 120), 'the area');
+    p.pickupDate = chooseDay(input.pickupDate, minPickup);
   } else {
     p.pickupPersonName = need(str(input.pickupPersonName, 120), 'the pickup person name');
     p.pickupPersonPhone = need(str(input.pickupPersonPhone, 30), 'the pickup person phone number');
-    const day = isoDate(input.pickupDate);
-    need(day, 'the pickup day');
-    if(minPickup && day < minPickup){
-      throw new HttpsError('invalid-argument', 'BAD_INPUT:Pickup can\'t be earlier than ' + minPickup + '. Please choose a later day.');
-    }
-    p.pickupDate = day;
+    p.pickupDate = chooseDay(input.pickupDate, minPickup);
   }
   return p;
 }
@@ -287,7 +302,7 @@ exports.submitDelivery = onCall(OPTS, async request => {
     if((o.status || 'pending') !== 'pending') throw new HttpsError('failed-precondition', 'LOCKED');
     if(Number(o.balance) > 0) throw new HttpsError('failed-precondition', 'BALANCE_OWING');
 
-    const minPickup = (portal.pickupStartDate || "");
+    const minPickup = earliestDay(portal);
     const details = cleanDetails(d.details, minPickup);
     if(pairedInvoice) details.pairedInvoice = pairedInvoice;
 
@@ -311,5 +326,5 @@ exports.submitDelivery = onCall(OPTS, async request => {
 // Exposed only when testing outside Firebase. Never exported when deployed,
 // so Firebase doesn't mistake it for a function.
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
-  exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, describeChanges, cleanDetails, publicOrder};
-}
+  exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, earliestDay, describeChanges, cleanDetails, publicOrder};
+    }
