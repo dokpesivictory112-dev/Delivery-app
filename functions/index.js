@@ -243,9 +243,26 @@ function describeChanges(before, after){
   return out.join('; ').slice(0, 400);
 }
 
-function chooseDay(value, minDay){
+// Which weekdays each option runs on (0 = Sunday ... 6 = Saturday).
+// Park waybills go out Tuesday and Friday only. Benin delivery and pickup: Monday to Saturday.
+const ALLOWED_WEEKDAYS = {
+  benin: [1, 2, 3, 4, 5, 6],
+  pickup: [1, 2, 3, 4, 5, 6],
+  outside: [2, 5]
+};
+const WEEKDAY_HELP = {
+  benin: 'Benin City delivery is Monday to Saturday (not Sunday).',
+  pickup: 'Pickup is Monday to Saturday (not Sunday).',
+  outside: 'Park deliveries go out on Tuesdays and Fridays only.'
+};
+
+function chooseDay(value, minDay, type){
   const day = isoDate(value);
   if(!day) throw new HttpsError('invalid-argument', 'BAD_INPUT:Please choose the day.');
+  const weekday = new Date(day + 'T00:00:00Z').getUTCDay();
+  if(type && ALLOWED_WEEKDAYS[type] && !ALLOWED_WEEKDAYS[type].includes(weekday)){
+    throw new HttpsError('invalid-argument', 'BAD_INPUT:' + WEEKDAY_HELP[type] + ' Please choose another day.');
+  }
   if(minDay && day < minDay){
     throw new HttpsError('invalid-argument', 'BAD_INPUT:That day is not available. Please choose ' + minDay + ' or a later day.');
   }
@@ -264,17 +281,17 @@ function cleanDetails(input, minPickup){
     p.area = need(str(input.area, 120), 'the area or town');
     p.landmark = need(str(input.landmark, 200), 'a landmark or description');
     p.street = str(input.street, 200) || '-';
-    p.pickupDate = chooseDay(input.pickupDate, minPickup);
+    p.pickupDate = chooseDay(input.pickupDate, minPickup, 'benin');
   } else if(t === 'outside'){
     p.recipientName = need(str(input.recipientName, 120), 'the recipient name');
     p.recipientPhone = need(str(input.recipientPhone, 30), 'the recipient phone number');
     p.state = need(str(input.state, 80), 'the state');
     p.area = need(str(input.area, 120), 'the area');
-    p.pickupDate = chooseDay(input.pickupDate, minPickup);
+    p.pickupDate = chooseDay(input.pickupDate, minPickup, 'outside');
   } else {
     p.pickupPersonName = need(str(input.pickupPersonName, 120), 'the pickup person name');
     p.pickupPersonPhone = need(str(input.pickupPersonPhone, 30), 'the pickup person phone number');
-    p.pickupDate = chooseDay(input.pickupDate, minPickup);
+    p.pickupDate = chooseDay(input.pickupDate, minPickup, 'pickup');
   }
   return p;
 }
@@ -328,3 +345,4 @@ exports.submitDelivery = onCall(OPTS, async request => {
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
   exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, earliestDay, describeChanges, cleanDetails, publicOrder};
     }
+    
