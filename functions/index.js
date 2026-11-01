@@ -244,15 +244,16 @@ function describeChanges(before, after){
 }
 
 // Which weekdays each option runs on (0 = Sunday ... 6 = Saturday).
-// Park waybills go out Tuesday and Friday only. Benin delivery and pickup: Monday to Saturday.
+// Park waybills go out Tuesday and Friday only.
+// Benin delivery and pickup: Monday, Wednesday, Thursday and Saturday (not Sunday, Tuesday or Friday).
 const ALLOWED_WEEKDAYS = {
-  benin: [1, 2, 3, 4, 5, 6],
-  pickup: [1, 2, 3, 4, 5, 6],
+  benin: [1, 3, 4, 6],
+  pickup: [1, 3, 4, 6],
   outside: [2, 5]
 };
 const WEEKDAY_HELP = {
-  benin: 'Benin City delivery is Monday to Saturday (not Sunday).',
-  pickup: 'Pickup is Monday to Saturday (not Sunday).',
+  benin: 'Benin City delivery is on Mondays, Wednesdays, Thursdays and Saturdays only.',
+  pickup: 'Pickup is on Mondays, Wednesdays, Thursdays and Saturdays only.',
   outside: 'Park deliveries go out on Tuesdays and Fridays only.'
 };
 
@@ -344,5 +345,4 @@ exports.submitDelivery = onCall(OPTS, async request => {
 // so Firebase doesn't mistake it for a function.
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
   exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, earliestDay, describeChanges, cleanDetails, publicOrder};
-    }
-    
+}
