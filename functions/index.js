@@ -190,6 +190,9 @@ function publicOrder(inv, o, portal){
     pickupPersonName: o.pickupPersonName || '',
     pickupPersonPhone: o.pickupPersonPhone || '',
     pickupDate: o.pickupDate || '',
+    shipMethod: o.shipMethod || (o.locationType === 'outside' ? 'park' : ''),
+    lga: o.lga || '',
+    jumiaAddress: o.jumiaAddress || '',
     pairedInvoice: o.pairedInvoice || '',
     minPickup: earliestDay(portal)
   };
@@ -227,16 +230,20 @@ const LABELS = {
   locationType: 'Delivery type', recipientName: 'Name', recipientPhone: 'Phone',
   area: 'Area', landmark: 'Landmark', street: 'Street', state: 'State',
   pickupPersonName: 'Pickup person', pickupPersonPhone: 'Pickup phone',
-  pickupDate: 'Day', pairedInvoice: 'Paired invoice'
+  pickupDate: 'Day', pairedInvoice: 'Paired invoice',
+  shipMethod: 'Send via', lga: 'LGA', jumiaAddress: 'Jumia address'
 };
+const SHIP_NAMES = {park: 'Park', jumia: 'Jumia'};
 const LOC_NAMES = {benin: 'Benin City', outside: 'Park delivery', pickup: 'Pickup'};
 
 function describeChanges(before, after){
-  const show = (k, v) => (k === 'locationType' ? (LOC_NAMES[v] || v) : v) || '(empty)';
+  const show = (k, v) => (k === 'locationType' ? (LOC_NAMES[v] || v) : k === 'shipMethod' ? (SHIP_NAMES[v] || v) : v) || '(empty)';
   const out = [];
   for(const k in LABELS){
     if(!(k in after)) continue;
-    const b = before[k] == null ? '' : String(before[k]);
+    let b = before[k] == null ? '' : String(before[k]);
+    // Orders saved before the Jumia choice existed were all park deliveries.
+    if(k === 'shipMethod' && !b && before.locationType === 'outside') b = 'park';
     const a = after[k] == null ? '' : String(after[k]);
     if(b !== a) out.push(`${LABELS[k]}: ${show(k, b)} → ${show(k, a)}`);
   }
@@ -283,16 +290,22 @@ function cleanDetails(input, minPickup){
     p.landmark = need(str(input.landmark, 200), 'a landmark or description');
     p.street = str(input.street, 200) || '-';
     p.pickupDate = chooseDay(input.pickupDate, minPickup, 'benin');
+    p.shipMethod = ''; p.lga = ''; p.jumiaAddress = '';
   } else if(t === 'outside'){
     p.recipientName = need(str(input.recipientName, 120), 'the recipient name');
     p.recipientPhone = need(str(input.recipientPhone, 30), 'the recipient phone number');
     p.state = need(str(input.state, 80), 'the state');
-    p.area = need(str(input.area, 120), 'the area');
+    const jumia = input.shipMethod === 'jumia';
+    p.shipMethod = jumia ? 'jumia' : 'park';
+    p.area = need(str(input.area, 120), jumia ? 'the area or town' : 'the area');
+    p.lga = jumia ? need(str(input.lga, 120), 'the local government (LGA)') : '';
+    p.jumiaAddress = jumia ? need(str(input.jumiaAddress, 250), 'the full home address') : '';
     p.pickupDate = chooseDay(input.pickupDate, minPickup, 'outside');
   } else {
     p.pickupPersonName = need(str(input.pickupPersonName, 120), 'the pickup person name');
     p.pickupPersonPhone = need(str(input.pickupPersonPhone, 30), 'the pickup person phone number');
     p.pickupDate = chooseDay(input.pickupDate, minPickup, 'pickup');
+    p.shipMethod = ''; p.lga = ''; p.jumiaAddress = '';
   }
   return p;
 }
@@ -345,4 +358,5 @@ exports.submitDelivery = onCall(OPTS, async request => {
 // so Firebase doesn't mistake it for a function.
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
   exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, earliestDay, describeChanges, cleanDetails, publicOrder};
-}
+    }
+                                
