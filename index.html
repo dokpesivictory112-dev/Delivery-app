@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fers Innova - Delivery Confirmation</title>
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-deep:#071527;
+    --gold:#C6952F;
+    --gold-light:#E8C877;
+    --cream:#FAF7F0;
+    --ink:#1A2332;
+    --muted:#6B7688;
+    --line:#E4E0D6;
+    --ok:#3A7D5C;
+    --wa:#25D366;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--navy-deep);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .phone{
+    width:100%;
+    max-width:420px;
+    background:var(--cream);
+    min-height:100vh;
+  }
+  header{
+    background:var(--navy);
+    padding:28px 20px 22px;
+    text-align:center;
+    border-bottom:3px solid var(--gold);
+  }
+  header .word{
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--gold-light);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  header h1{
+    color:#fff;
+    font-size:20px;
+    margin:0;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  header p{
+    color:rgba(255,255,255,0.6);
+    font-size:12.5px;
+    margin:6px 0 0;
+  }
+  .step{
+    padding:22px 20px 40px;
+  }
+  .label{
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  input{
+    width:100%;
+    padding:14px 16px;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-size:16px;
+    background:#fff;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  input:focus{outline:none;border-color:var(--gold);}
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:20px;
+  }
+  button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:var(--gold);
+    color:var(--navy-deep);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    cursor:pointer;
+  }
+  button.secondary{
+    background:transparent;
+    border:1.5px solid var(--navy);
+    color:var(--navy);
+    margin-top:10px;
+  }
+  button.whatsapp{
+    background:var(--wa);
+    color:#fff;
+  }
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .order-card{
+    background:#fff;
+    border-radius:12px;
+    border:1px solid var(--line);
+    overflow:hidden;
+    margin-bottom:18px;
+  }
+  .order-card .head{
+    background:var(--navy);
+    color:#fff;
+    padding:14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .order-card .head .inv{
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--gold-light);
+    font-weight:700;
+  }
+  .order-card .head .name{
+    font-size:14px;
+    font-weight:600;
+  }
+  .item-row{
+    display:flex;
+    justify-content:space-between;
+    padding:11px 16px;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .item-row:last-child{border-bottom:none;}
+  .item-row .qty{
+    color:var(--muted);
+    font-size:12.5px;
+  }
+  .item-row .amt{
+    color:var(--muted);
+    white-space:nowrap;
+    margin-left:12px;
+  }
+  .total-row{
+    display:flex;
+    justify-content:space-between;
+    padding:13px 16px;
+    background:#F5F1E6;
+    font-weight:700;
+    font-size:14px;
+  }
+
+  .confirm-box{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:#F5F1E6;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:20px;
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .confirm-box input[type=checkbox]{
+    width:auto;
+    margin:2px 0 0;
+    flex-shrink:0;
+  }
+
+  .toggle-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .toggle-btn{
+    flex:1;
+    min-width:104px;
+    padding:12px 6px;
+    border-radius:10px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    text-align:center;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .toggle-btn.active{
+    border-color:var(--navy);
+    background:var(--navy);
+    color:#fff;
+  }
+
+  .pair-toggle{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:4px 0 16px;
+    font-size:13.5px;
+  }
+  .pair-toggle input{width:auto;margin:0;}
+  .pair-block{
+    display:none;
+    background:#F5F1E6;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:18px;
+  }
+  .pair-status{
+    font-size:12.5px;
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:6px;
+  }
+  .pair-status.ok{background:#DCEEE3;color:var(--ok);}
+  .pair-status.bad{background:#F5DADA;color:#A33;}
+
+  .success{
+    text-align:center;
+    padding:20px 10px 10px;
+  }
+  .success .check{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--ok);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:28px;
+    margin:0 auto 16px;
+  }
+  .success h2{
+    font-size:18px;margin:0 0 8px;
+  }
+  .success p{
+    font-size:13.5px;color:var(--muted);line-height:1.5;margin:0 0 24px;
+  }
+  .footnote{
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    padding:16px 20px;
+  }
+  .flag-link{
+    display:block;
+    text-align:center;
+    font-size:12.5px;
+    color:var(--navy);
+    text-decoration:underline;
+    margin-top:14px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    width:100%;
+  }
+
+  /* Waybill preview */
+  .waybill-preview{
+    background:#fff;
+    border:2px dashed var(--line);
+    border-radius:12px;
+    padding:20px;
+    margin-top:20px;
+    position:relative;
+  }
+  .waybill-preview .wb-label{
+    font-size:10px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .wb-field{margin-bottom:14px;}
+  .wb-field .wb-k{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+    margin-bottom:2px;
+  }
+  .wb-field .wb-v{
+    font-size:18px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .wb-inv{
+    position:absolute;
+    top:14px;
+    right:16px;
+    font-size:10px;
+    color:var(--muted);
+    letter-spacing:0.5px;
+  }
+  /* On-page message box (replaces pop-ups, which some browsers hide) */
+  #noticeBox{
+    position:fixed;left:50%;transform:translateX(-50%);top:14px;
+    width:calc(100% - 28px);max-width:392px;z-index:50;
+    background:#fff;border:2px solid var(--gold);border-radius:12px;
+    padding:14px 16px;box-shadow:0 8px 28px rgba(0,0,0,0.3);
+    font-size:14px;line-height:1.5;color:var(--ink);display:none;
+  }
+  #noticeBox button{margin-top:10px;padding:10px;font-size:14px;}
+</style>
+</head>
+<body>
+<div id="noticeBox" role="alert"><div id="noticeText"></div><button onclick="closeNotice()">OK</button></div>
+<div class="phone">
+  <header>
+    <div class="word">Fers Innova</div>
+    <h1>Delivery Confirmation</h1>
+    <p>Enter your details to continue</p>
+  </header>
+
+  <!-- Shown instead of the form when the portal is closed -->
+  <div class="step" id="portalClosed" style="display:none;text-align:center;">
+    <div style="font-size:32px;margin-bottom:8px;">🚪</div>
+    <div style="font-weight:700;color:var(--navy);margin-bottom:6px;">Delivery confirmation isn't open right now</div>
+    <div class="hint">We'll let you know on WhatsApp once it's open. Please check back soon.</div>
+  </div>
+
+  <!-- Shown instead of the order screen when a balance is still owing -->
+  <div class="step" id="balanceOwing" style="display:none;text-align:center;">
+    <div style="font-size:32px;margin-bottom:8px;">💰</div>
+    <div style="font-weight:700;color:var(--navy);margin-bottom:6px;">Outstanding balance: <span id="balanceAmount"></span></div>
+    <div class="hint">Please complete payment before confirming delivery. Once we've received it, come back and look up your order again.</div>
+    <button class="secondary" onclick="reset()" style="margin-top:16px;">Check a Different Invoice</button>
+  </div>
+
+  <!-- STEP 1: Lookup -->
+  <div class="step" id="step1">
+    <div class="label">Invoice Number</div>
+    <input type="text" id="invInput" placeholder="Enter your invoice number" autocomplete="off" inputmode="numeric">
+    <div class="hint" style="margin-bottom:16px;">Type it with or without "INV" - both work.</div>
+
+    <div class="label">Phone Number Used to Order</div>
+    <input type="text" id="phoneInput" placeholder="Enter the phone number used to order" autocomplete="off">
+    <div class="hint" style="margin-bottom:16px;">Use the number written on your invoice.</div>
+
+    <div class="label">Name on Your Invoice</div>
+    <input type="text" id="nameInput" placeholder="Copy it from your invoice PDF" autocomplete="off">
+    <div class="hint">We match all three together, so only you can see your order. Your first name or surname is enough.</div>
+
+    <button onclick="lookup()">Find My Order</button>
+  </div>
+
+  <!-- STEP 2: Confirm order -->
+  <div class="step" id="step2" style="display:none;">
+    <div class="order-card" id="orderCard"></div>
+    <button class="secondary" style="margin-bottom:18px;" onclick="editLookup()">Edit Invoice / Phone Number</button>
+
+    <div class="confirm-box">
+      <input type="checkbox" id="confirmCheck" onchange="toggleContinue()">
+      <label for="confirmCheck">This matches what I ordered.</label>
+    </div>
+
+    <button id="continueBtn" disabled onclick="showStep3()">Continue to Delivery Details</button>
+    <button class="flag-link" onclick="flagIssue()">Something's wrong with my order →</button>
+  </div>
+
+  <!-- STEP 3: Delivery details -->
+  <div class="step" id="step3" style="display:none;">
+
+    <div class="label">How will this order reach you?</div>
+    <div class="toggle-row">
+      <div class="toggle-btn active" id="btnBenin" onclick="setLocation('benin')">Within Benin City</div>
+      <div class="toggle-btn" id="btnOutside" onclick="setLocation('outside')">Outside Benin City</div>
+      <div class="toggle-btn" id="btnPickup" onclick="setLocation('pickup')">I'll Pick Up Myself</div>
+    </div>
+
+    <!-- Benin City fields -->
+    <div id="beninFields">
+      <div class="label">Recipient's Full Name</div>
+      <input type="text" id="beninName" placeholder="Who should we deliver to?">
+      <div class="label">Recipient's Phone Number</div>
+      <input type="text" id="beninPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">Area / Town</div>
+      <input type="text" id="beninArea" placeholder="e.g. Ugbowo, GRA, Sapele Road">
+      <div class="label">Landmark / Description</div>
+      <input type="text" id="beninLandmark" placeholder="e.g. Close to First Bank, opposite NNPC filling station">
+      <div class="hint" style="margin-top:-4px;">Helpful since not all streets are well known - a nearby landmark makes it easier to find you.</div>
+      <div class="label">Street Address</div>
+      <input type="text" id="beninStreet" placeholder="House number, street name (if known)">
+      <div class="label">Which day do you want delivery?</div>
+      <input type="date" id="beninDate">
+      <div class="hint dayHint" style="margin-top:-4px;">Choose the day you want it delivered. Benin City delivery is on Mondays, Wednesdays, Thursdays and Saturdays only.</div>
+    </div>
+
+    <!-- Outside city / park fields -->
+    <div id="outsideFields" style="display:none;">
+      <div class="confirm-box" style="margin-bottom:14px;">
+        <input type="checkbox" id="jumiaCheck" onchange="toggleJumia()">
+        <label for="jumiaCheck"><b>I can wait: use Jumia (cheaper)</b><br>Leave this unticked if you need it faster, and we will send it by park.</label>
+      </div>
+      <div class="hint" id="jumiaNote" style="display:none;margin-top:-6px;color:var(--navy);font-weight:600;">Jumia usually takes 3 days or more to arrive, depending on your location.</div>
+      <div class="hint" id="parkNote" style="margin-top:-6px;">Delivered via park - we'll generate a waybill from these details.</div>
+      <div class="label">Recipient's Full Name</div>
+      <input type="text" id="outName" placeholder="Who is picking this up?">
+      <div class="label">Recipient's Phone Number</div>
+      <input type="text" id="outPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">State</div>
+      <input type="text" id="outState" placeholder="e.g. Lagos">
+      <div class="label" id="outAreaLabel">Area</div>
+      <input type="text" id="outArea" placeholder="e.g. Ojota Park">
+      <div id="jumiaStationBox" style="display:none;">
+        <div class="label">Local Government (LGA)</div>
+        <input type="text" id="jumiaLga" placeholder="e.g. Ikeja">
+        <div class="label">Full Home Address</div>
+        <input type="text" id="jumiaAddress" placeholder="House number, street, area">
+        <div class="hint" style="margin-top:-2px;">We will send it to the nearest Jumia pickup station for your address.</div>
+      </div>
+      <div class="label">Which day should it be sent?</div>
+      <input type="date" id="outDate">
+      <div class="hint dayHint" style="margin-top:-4px;">Choose the day you want it sent. Park deliveries go out on Tuesdays and Fridays only.</div>
+    </div>
+
+    <!-- Pickup fields -->
+    <div id="pickupFields" style="display:none;">
+      <div class="hint" style="margin-top:-6px;">Tell us who's collecting and which day works - you can change this anytime until your order is packed and ready.</div>
+      <div class="label">Who will be picking this up?</div>
+      <input type="text" id="pickName" placeholder="e.g. Emike (can be you or someone you authorize)">
+      <div class="label">Their Phone Number</div>
+      <input type="text" id="pickPhone" placeholder="e.g. 0813 000 0000">
+      <div class="label">Which day are you coming?</div>
+      <input type="date" id="pickDate">
+      <div class="hint dayHint" id="pickHint" style="margin-top:-4px;">Choose the day you will come. Pickup is on Mondays, Wednesdays, Thursdays and Saturdays only.</div>
+    </div>
+
+    <!-- Paired delivery -->
+    <div class="pair-toggle">
+      <input type="checkbox" id="pairCheck" onchange="togglePair()">
+      <label for="pairCheck">Delivering together with someone else (e.g. a sibling)?</label>
+    </div>
+    <div class="pair-block" id="pairBlock">
+      <div class="label">Their Invoice Number</div>
+      <input type="text" id="pairInv" placeholder="Enter their invoice number">
+      <div class="label">Their Phone Number</div>
+      <input type="text" id="pairPhone" placeholder="e.g. 0901 255 1760">
+      <div class="label">Their Name on the Invoice</div>
+      <input type="text" id="pairName" placeholder="As written on their invoice">
+      <button class="secondary" style="margin-top:4px;" onclick="verifyPair()">Verify & Link</button>
+      <div id="pairStatus"></div>
+    </div>
+
+    <button onclick="showSuccess()">Confirm Delivery Details</button>
+  </div>
+
+  <!-- STEP 4: Success + waybill preview if outside -->
+  <div class="step" id="step4" style="display:none;">
+    <div class="success">
+      <div class="check">✓</div>
+      <h2>Delivery details saved</h2>
+      <p id="successText">Your order and delivery info are confirmed. You'll be notified on WhatsApp when your batch is ready for dispatch.</p>
+    </div>
+
+    <div class="waybill-preview" id="waybillPreview" style="display:none;">
+      <div class="wb-inv" id="wbInv"></div>
+      <div class="wb-label" id="wbLabel">Waybill - Park Delivery (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Name</div><div class="wb-v" id="wbName"></div></div>
+      <div class="wb-field"><div class="wb-k">Number</div><div class="wb-v" id="wbNumber"></div></div>
+      <div class="wb-field"><div class="wb-k">State</div><div class="wb-v" id="wbState"></div></div>
+      <div class="wb-field"><div class="wb-k">Area</div><div class="wb-v" id="wbArea"></div></div>
+      <div class="wb-field" id="wbJumiaField" style="display:none;"><div class="wb-k">LGA / Home address (Jumia)</div><div class="wb-v" id="wbJumia"></div></div>
+    </div>
+
+    <div class="waybill-preview" id="dispatchPreview" style="display:none;">
+      <div class="wb-inv" id="dpInv"></div>
+      <div class="wb-label">Dispatch Card - Benin City (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Name</div><div class="wb-v" id="dpName"></div></div>
+      <div class="wb-field"><div class="wb-k">Number</div><div class="wb-v" id="dpNumber"></div></div>
+      <div class="wb-field"><div class="wb-k">Area / Town</div><div class="wb-v" id="dpArea"></div></div>
+      <div class="wb-field"><div class="wb-k">Landmark</div><div class="wb-v" id="dpLandmark"></div></div>
+      <div class="wb-field"><div class="wb-k">Street Address</div><div class="wb-v" id="dpStreet"></div></div>
+    </div>
+
+    <div class="waybill-preview" id="pickupPreview" style="display:none;">
+      <div class="wb-inv" id="pkInv"></div>
+      <div class="wb-label">Pickup Slip (staff preview)</div>
+      <div class="wb-field"><div class="wb-k">Authorized Person</div><div class="wb-v" id="pkName"></div></div>
+      <div class="wb-field"><div class="wb-k">Their Number</div><div class="wb-v" id="pkPhone"></div></div>
+      <div class="wb-field"><div class="wb-k">Pickup Day</div><div class="wb-v" id="pkDate"></div></div>
+    </div>
+
+    <button class="secondary" onclick="editDelivery()">Edit Delivery Details</button>
+    <button class="secondary" onclick="reset()">Done</button>
+  </div>
+</div>
+
+<!-- Firebase (compat build - works on GitHub Pages and everywhere else) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-functions-compat.js"></script>
+
+<script>
+const ORDERS = {};
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCLPZpL02tviNeTY50kxO957_wzeJOfego",
+  authDomain: "delivery-app-76da1.firebaseapp.com",
+  projectId: "delivery-app-76da1",
+  storageBucket: "delivery-app-76da1.firebasestorage.app",
+  messagingSenderId: "34716230811",
+  appId: "1:34716230811:web:9130597e8d9729fc6ed23e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();           // only used to read the open/closed switch
+const fns = firebase.app().functions('europe-west1'); // must match the region in functions/index.js
+
+// Shows a message on the page itself. Browsers can silently hide pop-up boxes,
+// so nothing here depends on alert().
+function notify(msg){
+  const box = document.getElementById('noticeBox');
+  document.getElementById('noticeText').textContent = msg;
+  box.style.display = 'block';
+  try{ box.scrollIntoView({block:'nearest'}); } catch(e){}
+  if(window.__notifyHook) window.__notifyHook(msg);
+}
+function closeNotice(){ document.getElementById('noticeBox').style.display = 'none'; }
+
+// Stops imported text from being treated as page code
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Show a customer's earlier answers again when they come back to change them
+function prefillDelivery(o){
+  if(!o || !o.locationType) return;
+  const set = (id, v) => { const el = document.getElementById(id); if(el && v) el.value = v; };
+  setLocation(o.locationType);
+  set('beninName', o.recipientName); set('beninPhone', o.recipientPhone);
+  set('beninArea', o.area); set('beninLandmark', o.landmark);
+  if(o.street && o.street !== '-') set('beninStreet', o.street);
+  set('outName', o.recipientName); set('outPhone', o.recipientPhone);
+  set('outState', o.state); set('outArea', o.area);
+  document.getElementById('jumiaCheck').checked = (o.shipMethod === 'jumia');
+  set('jumiaLga', o.lga); set('jumiaAddress', o.jumiaAddress);
+  toggleJumia();
+  set('pickName', o.pickupPersonName); set('pickPhone', o.pickupPersonPhone);
+  set('pickDate', o.pickupDate); set('beninDate', o.pickupDate); set('outDate', o.pickupDate);
+}
+
+let currentInv = null;
+let currentOrder = null;
+let pairedInv = null;
+let pairedPhone = null;
+let pairedName = null;
+let currentPhone = '';
+let currentName = '';
+const TOO_MANY_MSG = "Too many attempts. Please wait about an hour before trying again, or contact us on WhatsApp for help.";
+
+const LOCKED_MSG = "This order is already being processed, so delivery details can't be changed here. Please contact us on WhatsApp if something needs to change.";
+
+
+
+// Which weekdays each option runs on (0 = Sunday ... 6 = Saturday). The server checks this too.
+const ALLOWED_WEEKDAYS = { benin:[1,3,4,6], pickup:[1,3,4,6], outside:[2,5] };
+const WEEKDAY_HELP = {
+  benin: 'Benin City delivery is on Mondays, Wednesdays, Thursdays and Saturdays only.',
+  pickup: 'Pickup is on Mondays, Wednesdays, Thursdays and Saturdays only.',
+  outside: 'Park deliveries go out on Tuesdays and Fridays only.'
+};
+function dayAllowed(type, iso){
+  if(!iso) return true;
+  const wd = new Date(iso + 'T00:00:00').getDay();
+  return ALLOWED_WEEKDAYS[type].includes(wd);
+}
+function checkDayInput(type, inputId){
+  const el = document.getElementById(inputId);
+  if(el.value && !dayAllowed(type, el.value)){
+    notify(WEEKDAY_HELP[type] + ' Please choose another day.');
+    el.value = '';
+  }
+}
+['beninDate:benin','outDate:outside','pickDate:pickup'].forEach(pair => {
+  const [id, type] = pair.split(':');
+  document.getElementById(id).addEventListener('change', () => checkDayInput(type, id));
+});
+
+function toggleJumia(){
+  const on = document.getElementById('jumiaCheck').checked;
+  document.getElementById('jumiaNote').style.display = on ? 'block' : 'none';
+  document.getElementById('parkNote').style.display = on ? 'none' : 'block';
+  document.getElementById('jumiaStationBox').style.display = on ? 'block' : 'none';
+  document.getElementById('outAreaLabel').textContent = on ? 'Area / Town' : 'Area';
+  document.getElementById('outArea').placeholder = on ? 'e.g. Ikeja' : 'e.g. Ojota Park';
+}
+
+function prettyDate(iso){
+  try{
+    return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+  } catch(e){ return iso; }
+}
+
+// Check once, on load, whether Fers has the portal open right now.
+db.collection('settings').doc('portal').get().then(snap => {
+  const open = snap.exists ? snap.data().open : true; // default open if never set
+
+  if(open === false){
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('portalClosed').style.display = 'block';
+  }
+}).catch(() => { /* if this check fails, don't block customers - fail open */ });
+
+function normalizePhone(p){
+  let digits = p.replace(/[^0-9]/g,'');
+  if(digits.startsWith('234')) digits = digits.slice(3);
+  if(digits.startsWith('0')) digits = digits.slice(1);
+  return digits;
+}
+
+// All checking now happens on the server. The page sends the invoice and phone,
+// and gets back only that one order, or a refusal. Nothing else is readable.
+async function callFn(name, data){
+  try{
+    const res = await fns.httpsCallable(name)(data);
+    return {ok:true, data: res.data};
+  } catch(err){
+    return {ok:false, msg: String((err && err.message) || ''), code: String((err && err.code) || '')};
+  }
+}
+
+function explainError(res){
+  const m = res.msg || '';
+  if(m.startsWith('NO_MATCH')) return {kind:'no_match'};
+  if(m.startsWith('TOO_MANY')) return {kind:'too_many'};
+  if(m.startsWith('PORTAL_CLOSED')) return {kind:'closed'};
+  if(m.startsWith('LOCKED')) return {kind:'locked'};
+  if(m.startsWith('BALANCE_OWING')) return {kind:'balance'};
+  if(m.startsWith('BAD_INPUT:')) return {kind:'bad_input', text: m.slice('BAD_INPUT:'.length)};
+  if(m.startsWith('BAD_INPUT')) return {kind:'bad_input', text: 'Please check what you entered and try again.'};
+  return {kind:'error'};
+}
+
+async function verifyInvoicePhone(invRaw, phoneRaw, nameRaw, fnName){
+  const res = await callFn(fnName || 'lookupOrder', {invoice: invRaw, phone: phoneRaw, name: nameRaw});
+  if(!res.ok) return {ok:false, reason: explainError(res).kind};
+  return {ok:true, inv: res.data.inv, order: res.data};
+}
+
+async function lookup(){
+  closeNotice();
+  const btn = document.querySelector('#step1 button');
+  const origText = btn.textContent;
+  btn.textContent = 'Checking...';
+  btn.disabled = true;
+
+  const typedPhone = document.getElementById('phoneInput').value;
+  const typedName = document.getElementById('nameInput').value;
+  const result = await verifyInvoicePhone(
+    document.getElementById('invInput').value,
+    typedPhone,
+    typedName
+  );
+
+  btn.textContent = origText;
+  btn.disabled = false;
+
+  if(!result.ok){
+    if(result.reason === "error"){
+      notify("Couldn't reach our system just now. Please check your connection and try again.");
+    } else if(result.reason === "too_many"){
+      notify(TOO_MANY_MSG);
+    } else if(result.reason === "closed"){
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('portalClosed').style.display = 'block';
+    } else if(result.reason === "bad_input"){
+      notify("Please enter your invoice number, the phone number used to order, and the name on your invoice.");
+    } else {
+      notify("We couldn't match those details. Please copy the invoice number, phone number and name exactly from your invoice, or contact us on WhatsApp for help.");
+    }
+    return;
+  }
+  currentInv = result.inv;
+  currentOrder = result.order;
+  currentPhone = typedPhone;
+  currentName = typedName;
+
+  if(currentOrder.balance && currentOrder.balance > 0){
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('balanceOwing').style.display = 'block';
+    document.getElementById('balanceAmount').textContent =
+      '₦' + Number(currentOrder.balance).toLocaleString();
+    return;
+  }
+
+  const card = document.getElementById('orderCard');
+  let itemsBlock = '';
+  if(Array.isArray(currentOrder.items) && currentOrder.items.length){
+    itemsBlock = currentOrder.items.map(it => `
+      <div class="item-row">
+        <div>${esc(it.name)}<div class="qty">Qty: ${esc(it.qty)}</div></div>
+        <div class="amt">₦${Number(it.amt).toLocaleString()}</div>
+      </div>`).join('');
+  }
+  const totalDisplay = currentOrder.total != null ? `₦${Number(currentOrder.total).toLocaleString()}` : '-';
+  card.innerHTML = `
+    <div class="head">
+      <div class="inv">Invoice ${esc(result.inv)}</div>
+      <div class="name">${esc(currentOrder.clientName)}</div>
+    </div>
+    ${itemsBlock}
+    <div class="total-row"><span>Total</span><span>${totalDisplay}</span></div>
+  `;
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='block';
+
+  // If Fers has already packed or delivered this order, say so right here,
+  // instead of letting the customer fill in everything and fail at the end.
+  const isLocked = !!(currentOrder.status && currentOrder.status !== 'pending');
+  const oldNotice = document.getElementById('lockedNotice');
+  if(oldNotice) oldNotice.remove();
+  if(isLocked){
+    const notice = document.createElement('div');
+    notice.id = 'lockedNotice';
+    notice.className = 'confirm-box';
+    notice.style.background = '#F5E6D0';
+    notice.textContent = LOCKED_MSG;
+    document.getElementById('orderCard').insertAdjacentElement('afterend', notice);
+  }
+  document.querySelector('#step2 .confirm-box:not(#lockedNotice)').style.display = isLocked ? 'none' : '';
+  document.getElementById('continueBtn').style.display = isLocked ? 'none' : '';
+  document.querySelector('#step2 .flag-link').style.display = isLocked ? 'none' : '';
+
+  // Pickup day can never be earlier than the date the server worked out
+  // (the later of your import date and the pickup start date from the admin page).
+  if(currentOrder.minPickup){
+    ['pickDate','beninDate','outDate'].forEach(id => { document.getElementById(id).min = currentOrder.minPickup; });
+    document.querySelectorAll('.dayHint').forEach(h => {
+      h.textContent = `Earliest day available: ${prettyDate(currentOrder.minPickup)}. You can choose that day or any day after it.`;
+      const t = h.id === 'pickHint' ? 'pickup' : (h.previousElementSibling && h.previousElementSibling.id === 'outDate' ? 'outside' : 'benin');
+      h.textContent += ' ' + WEEKDAY_HELP[t];
+    });
+  }
+  prefillDelivery(currentOrder);
+}
+
+function editLookup(){
+  // Return to step 1 with the current values still filled in,
+  // so the customer only has to fix what was wrong, not retype everything.
+  document.getElementById('invInput').value = currentInv;
+  document.getElementById('phoneInput').value = currentPhone;
+  document.getElementById('nameInput').value = currentName;
+  document.getElementById('confirmCheck').checked = false;
+  document.getElementById('continueBtn').disabled = true;
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step1').style.display='block';
+}
+
+function toggleContinue(){
+  document.getElementById('continueBtn').disabled = !document.getElementById('confirmCheck').checked;
+}
+
+function showStep3(){
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='block';
+}
+
+async function flagIssue(){
+  if(currentOrder.status && currentOrder.status !== 'pending'){
+    notify(LOCKED_MSG);
+    return;
+  }
+  // Still open WhatsApp even if this fails, so the customer isn't blocked
+  await callFn('flagOrder', {invoice: currentInv, phone: currentPhone, name: currentName});
+
+  const msg = encodeURIComponent(`Hi, I have an issue with my order - Invoice ${currentInv}, ${currentOrder.clientName}.`);
+  window.open("https://wa.me/2347044593466?text=" + msg, '_blank');
+}
+
+function setLocation(loc){
+  document.getElementById('btnBenin').classList.toggle('active', loc==='benin');
+  document.getElementById('btnOutside').classList.toggle('active', loc==='outside');
+  document.getElementById('btnPickup').classList.toggle('active', loc==='pickup');
+  document.getElementById('beninFields').style.display = loc==='benin' ? 'block':'none';
+  document.getElementById('outsideFields').style.display = loc==='outside' ? 'block':'none';
+  document.getElementById('pickupFields').style.display = loc==='pickup' ? 'block':'none';
+  window.currentLocation = loc;
+}
+setLocation('benin');
+
+function togglePair(){
+  document.getElementById('pairBlock').style.display = document.getElementById('pairCheck').checked ? 'block':'none';
+}
+
+async function verifyPair(){
+  const statusEl = document.getElementById('pairStatus');
+  statusEl.className = 'pair-status';
+  statusEl.textContent = 'Checking...';
+
+  const typedPhone = document.getElementById('pairPhone').value;
+  const typedName = document.getElementById('pairName').value;
+  const result = await verifyInvoicePhone(document.getElementById('pairInv').value, typedPhone, typedName, 'verifyPair');
+  if(!result.ok){
+    statusEl.className = 'pair-status bad';
+    statusEl.textContent = result.reason === 'too_many'
+      ? TOO_MANY_MSG
+      : "Couldn't verify - check their invoice number, phone number and name match their invoice.";
+    pairedInv = null;
+    pairedPhone = null;
+    pairedName = null;
+  } else {
+    statusEl.className = 'pair-status ok';
+    statusEl.textContent = `Linked to Invoice ${result.inv} (${result.order.clientName || result.order.inv}) - both will be delivered together.`;
+    pairedInv = result.inv;
+    pairedPhone = typedPhone;
+    pairedName = typedName;
+  }
+}
+
+async function showSuccess(){
+  let missing = [];
+  if(window.currentLocation === 'benin'){
+    if(!document.getElementById('beninName').value.trim()) missing.push('Name');
+    if(!document.getElementById('beninPhone').value.trim()) missing.push('Phone');
+    if(!document.getElementById('beninArea').value.trim()) missing.push('Area/Town');
+    if(!document.getElementById('beninLandmark').value.trim()) missing.push('Landmark/Description');
+    if(!document.getElementById('beninDate').value) missing.push('Delivery Day');
+  } else if(window.currentLocation === 'outside'){
+    if(!document.getElementById('outName').value.trim()) missing.push('Name');
+    if(!document.getElementById('outPhone').value.trim()) missing.push('Phone');
+    if(!document.getElementById('outState').value.trim()) missing.push('State');
+    if(!document.getElementById('outArea').value.trim()) missing.push('Area');
+    if(document.getElementById('jumiaCheck').checked){
+      if(!document.getElementById('jumiaLga').value.trim()) missing.push('Local Government (LGA)');
+      if(!document.getElementById('jumiaAddress').value.trim()) missing.push('Full Home Address');
+    }
+    if(!document.getElementById('outDate').value) missing.push('Day');
+  } else {
+    if(!document.getElementById('pickName').value.trim()) missing.push('Pickup Person Name');
+    if(!document.getElementById('pickPhone').value.trim()) missing.push('Their Phone Number');
+    if(!document.getElementById('pickDate').value.trim()) missing.push('Pickup Day');
+  }
+  if(missing.length){
+    notify("Please fill in: " + missing.join(', '));
+    return;
+  }
+
+  const dayId = {benin:'beninDate', outside:'outDate', pickup:'pickDate'}[window.currentLocation];
+  if(!dayAllowed(window.currentLocation, document.getElementById(dayId).value)){
+    notify(WEEKDAY_HELP[window.currentLocation] + ' Please choose another day.');
+    return;
+  }
+
+  const btn = document.querySelector('#step3 button[onclick="showSuccess()"]');
+  const resetBtn = () => { if(btn){ btn.textContent = 'Confirm Delivery Details'; btn.disabled = false; } };
+  if(btn){ btn.textContent = 'Saving...'; btn.disabled = true; }
+
+  // What the customer typed. The server re-checks everything (invoice + phone,
+  // packed/delivered lock, balance, pickup day) and works out the change alert.
+  let payload = { locationType: window.currentLocation };
+  if(window.currentLocation === 'outside'){
+    payload.recipientName = document.getElementById('outName').value.trim();
+    payload.recipientPhone = document.getElementById('outPhone').value.trim();
+    payload.state = document.getElementById('outState').value.trim();
+    payload.area = document.getElementById('outArea').value.trim();
+    payload.shipMethod = document.getElementById('jumiaCheck').checked ? 'jumia' : 'park';
+    payload.lga = payload.shipMethod === 'jumia' ? document.getElementById('jumiaLga').value.trim() : '';
+    payload.jumiaAddress = payload.shipMethod === 'jumia' ? document.getElementById('jumiaAddress').value.trim() : '';
+    payload.pickupDate = document.getElementById('outDate').value;
+  } else if(window.currentLocation === 'pickup'){
+    payload.pickupPersonName = document.getElementById('pickName').value.trim();
+    payload.pickupPersonPhone = document.getElementById('pickPhone').value.trim();
+    payload.pickupDate = document.getElementById('pickDate').value;
+  } else {
+    payload.recipientName = document.getElementById('beninName').value.trim();
+    payload.recipientPhone = document.getElementById('beninPhone').value.trim();
+    payload.area = document.getElementById('beninArea').value.trim();
+    payload.landmark = document.getElementById('beninLandmark').value.trim();
+    payload.street = document.getElementById('beninStreet').value.trim() || '-';
+    payload.pickupDate = document.getElementById('beninDate').value;
+  }
+
+  const res = await callFn('submitDelivery', {
+    invoice: currentInv,
+    phone: currentPhone,
+    name: currentName,
+    details: payload,
+    pairedInvoice: pairedInv || '',
+    pairedPhone: pairedPhone || '',
+    pairedName: pairedName || ''
+  });
+  if(!res.ok){
+    resetBtn();
+    const e = explainError(res);
+    if(e.kind === 'locked'){ notify(LOCKED_MSG); }
+    else if(e.kind === 'balance'){ notify("There is still a balance owing on this order. Please complete payment first, then try again."); }
+    else if(e.kind === 'bad_input'){ notify(e.text); }
+    else if(e.kind === 'closed'){ notify("Delivery confirmation has just been closed. Please check back soon."); }
+    else if(e.kind === 'too_many'){ notify(TOO_MANY_MSG); }
+    else if(e.kind === 'no_match'){ notify("We couldn't confirm this order. Please go back, look it up again, and retry."); }
+    else { notify("Couldn't save your details just now. Please check your connection and try again."); }
+    return;
+  }
+
+  document.getElementById('step3').style.display='none';
+  document.getElementById('step4').style.display='block';
+
+  if(window.currentLocation === 'outside'){
+    const viaJumia = payload.shipMethod === 'jumia';
+    document.getElementById('successText').textContent = viaJumia
+      ? "Your order will be sent by Jumia. It usually takes 3 days or more to arrive, depending on your location."
+      : "Your delivery will go through park. A waybill has been generated for our team below.";
+    document.getElementById('wbLabel').textContent = viaJumia ? "Waybill - Jumia Delivery (staff preview)" : "Waybill - Park Delivery (staff preview)";
+    document.getElementById('wbJumiaField').style.display = viaJumia ? 'block' : 'none';
+    document.getElementById('wbJumia').textContent = viaJumia ? (payload.lga + ' - ' + payload.jumiaAddress) : '';
+    document.getElementById('waybillPreview').style.display='block';
+    document.getElementById('wbName').textContent = payload.recipientName;
+    document.getElementById('wbNumber').textContent = payload.recipientPhone;
+    document.getElementById('wbState').textContent = payload.state;
+    document.getElementById('wbArea').textContent = payload.area;
+    document.getElementById('wbInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  } else if(window.currentLocation === 'pickup'){
+    document.getElementById('successText').textContent = "Pickup details saved. Bring ID matching the authorized name below when you come.";
+    document.getElementById('pickupPreview').style.display='block';
+    document.getElementById('pkName').textContent = payload.pickupPersonName;
+    document.getElementById('pkPhone').textContent = payload.pickupPersonPhone;
+    document.getElementById('pkDate').textContent = payload.pickupDate;
+    document.getElementById('pkInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  } else {
+    document.getElementById('successText').textContent = "Your delivery will be handled by our Benin City dispatch team. A dispatch card has been generated below.";
+    document.getElementById('dispatchPreview').style.display='block';
+    document.getElementById('dpName').textContent = payload.recipientName;
+    document.getElementById('dpNumber').textContent = payload.recipientPhone;
+    document.getElementById('dpArea').textContent = payload.area;
+    document.getElementById('dpLandmark').textContent = payload.landmark;
+    document.getElementById('dpStreet').textContent = payload.street;
+    document.getElementById('dpInv').textContent = pairedInv
+      ? `Inv ${currentInv} + ${pairedInv}`
+      : `Inv ${currentInv}`;
+  }
+}
+
+async function editDelivery(){
+  // Once staff has packed or delivered the order, the server itself
+  // (via security rules) will refuse this edit - this check just
+  // gives the customer a clear message instead of a silent failure.
+  const fresh = await callFn('lookupOrder', {invoice: currentInv, phone: currentPhone, name: currentName});
+  if(fresh.ok) currentOrder = fresh.data;
+  if(currentOrder && currentOrder.status && currentOrder.status !== 'pending'){
+    notify(LOCKED_MSG);
+    return;
+  }
+  // Fields are untouched since we never cleared them - customer
+  // just sees their own step 3 again, exactly as they left it.
+  document.getElementById('waybillPreview').style.display='none';
+  document.getElementById('dispatchPreview').style.display='none';
+  document.getElementById('pickupPreview').style.display='none';
+  document.getElementById('step4').style.display='none';
+  document.getElementById('step3').style.display='block';
+}
+
+function reset(){
+  location.reload();
+}
+</script>
+</body>
+</html>
