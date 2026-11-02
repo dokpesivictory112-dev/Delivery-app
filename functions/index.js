@@ -62,6 +62,15 @@ function nameMatches(typed, order){
   return t.some(w => stored.has(w));
 }
 
+// "N/A", "-" and similar placeholders from the export are not real names.
+function realName(...candidates){
+  for(const c of candidates){
+    const v = String(c == null ? '' : c).trim();
+    if(v && !/^(n\/?a|na|none|null|-+)$/i.test(v)) return v;
+  }
+  return '';
+}
+
 function sha(s){
   return crypto.createHash('sha256').update(String(s)).digest('hex').slice(0, 32);
 }
@@ -175,7 +184,7 @@ function publicOrder(inv, o, portal){
   return {
     inv,
     invoiceNumber: o.invoiceNumber || inv,
-    clientName: o.clientName || o.client || '',
+    clientName: realName(o.clientName, o.organizationName, o.client),
     items: Array.isArray(o.items) ? o.items.map(i => ({name: i.name, qty: i.qty, amt: i.amt})) : [],
     total: o.total == null ? null : o.total,
     balance: Number(o.balance) || 0,
@@ -209,7 +218,7 @@ exports.lookupOrder = onCall(OPTS, async request => {
 exports.verifyPair = onCall(OPTS, async request => {
   const d = request.data || {};
   const {inv, order} = await verifyOrder(request, d.invoice, d.phone, d.name);
-  return {ok: true, inv, clientName: order.clientName || order.client || ''};
+  return {ok: true, inv, clientName: realName(order.clientName, order.organizationName, order.client)};
 });
 
 // ---------- Function 3: "something's wrong with my order" ----------
@@ -358,5 +367,4 @@ exports.submitDelivery = onCall(OPTS, async request => {
 // so Firebase doesn't mistake it for a function.
 if(process.env.FERS_FUNCTIONS_TEST === '1'){
   exports._test = {normalizeInvoice, validInvoiceId, normalizePhone, nameWords, nameMatches, laterDate, earliestDay, describeChanges, cleanDetails, publicOrder};
-    }
-                                
+}
